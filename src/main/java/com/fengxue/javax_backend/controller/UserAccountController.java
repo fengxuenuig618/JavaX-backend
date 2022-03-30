@@ -2,7 +2,10 @@ package com.fengxue.javax_backend.controller;
 
 
 import com.fengxue.javax_backend.dao.UserAccountRepository;
+import com.fengxue.javax_backend.dao.UserLoginRepository;
 import com.fengxue.javax_backend.entity.UserAccount;
+import com.fengxue.javax_backend.entity.UserLogin;
+import com.fengxue.javax_backend.util.MyAnnotation.UserLoginToken;
 import com.fengxue.javax_backend.util.Response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +16,24 @@ import java.util.List;
 public class UserAccountController {
     @Autowired
     private UserAccountRepository userRepository;
+
+    @Autowired
+    private UserLoginRepository userLoginRepository;
+
+
+
+
+
+
+    //查询所有
+    @UserLoginToken
+    @GetMapping("/usersl")
+    public ResponseResult<List<UserLogin>> selectUsersl()
+    {
+        List<UserLogin> usersList= userLoginRepository.findAll();
+
+        return Response.createOkResp(usersList);
+    }
 
     //查询所有
     @GetMapping("/users")
@@ -62,26 +83,26 @@ public class UserAccountController {
 
     }
 
-    //校验密码
-    @PostMapping("/login")
-    public ResponseResult loginUser(UserAccount user)
-    {
-        String name = user.getUname();
-        String pwd = user.getUpw();
-        System.out.println("=--------");
-        System.out.println(name);
-        System.out.println("----------");
-        List<UserAccount> users = userRepository.findByUname(name);
-        for(UserAccount us:users){
-            System.out.println(us.getUname());
-        }
-        if(users.isEmpty()) return Response.createFailResp("no such user");
-        if(users.get(0).getUpw().equals(pwd)){
-            return Response.createOkResp("login success");
-        }
-        else{
-            return Response.createFailResp("wrong password");
-        }
-
-    }
+//    //校验密码
+//    @PostMapping("/login")
+//    public ResponseResult loginUser(UserAccount user)
+//    {
+//        String name = user.getUname();
+//        String pwd = user.getUpw();
+//        System.out.println("=--------");
+//        System.out.println(name);
+//        System.out.println("----------");
+//        List<UserAccount> users = userRepository.findByUname(name);
+//        for(UserAccount us:users){
+//            System.out.println(us.getUname());
+//        }
+//        if(users.isEmpty()) return Response.createFailResp("no such user");
+//        if(users.get(0).getUpw().equals(pwd)){
+//            return Response.createOkResp("login success");
+//        }
+//        else{
+//            return Response.createFailResp("wrong password");
+//        }
+//
+//    }
 }
