@@ -2,9 +2,8 @@ package com.fengxue.javax_backend.controller;
 
 
 import com.fengxue.javax_backend.dao.UserAccountRepository;
-import com.fengxue.javax_backend.dao.UserLoginRepository;
 import com.fengxue.javax_backend.entity.UserAccount;
-import com.fengxue.javax_backend.entity.UserLogin;
+import com.fengxue.javax_backend.entity.UserLoginTransfer;
 import com.fengxue.javax_backend.util.MyAnnotation.UserLoginToken;
 import com.fengxue.javax_backend.util.Response.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +14,9 @@ import java.util.List;
 @RestController
 public class UserAccountController {
     @Autowired
-    private UserAccountRepository userRepository;
+    private UserAccountRepository userAccountRepository;
 
-    @Autowired
-    private UserLoginRepository userLoginRepository;
+
 
 
 
@@ -28,9 +26,9 @@ public class UserAccountController {
     //查询所有
     @UserLoginToken
     @GetMapping("/usersl")
-    public ResponseResult<List<UserLogin>> selectUsersl()
+    public ResponseResult<List<UserAccount>> selectUsersl()
     {
-        List<UserLogin> usersList= userLoginRepository.findAll();
+        List<UserAccount> usersList= userAccountRepository.findAll();
 
         return Response.createOkResp(usersList);
     }
@@ -39,7 +37,7 @@ public class UserAccountController {
     @GetMapping("/users")
     public ResponseResult<List<UserAccount>> selectUsers()
     {
-        List<UserAccount> usersList= userRepository.findAll();
+        List<UserAccount> usersList= userAccountRepository.findAll();
 
         return Response.createOkResp(usersList);
     }
@@ -48,7 +46,7 @@ public class UserAccountController {
     @GetMapping("/users/{id}")
     public ResponseResult<UserAccount> selectUserById(@PathVariable(name = "id") int id)
     {
-        UserAccount user = userRepository.findById(id).get();
+        UserAccount user = userAccountRepository.findById(id).get();
 
         return Response.createOkResp(user);
     }
@@ -59,7 +57,7 @@ public class UserAccountController {
     {
 
         System.out.println(user.toString());
-        userRepository.save(user);
+        userAccountRepository.save(user);
 
         return Response.createOkResp("add success");
     }
@@ -68,7 +66,7 @@ public class UserAccountController {
     @PutMapping("/users")
     public ResponseResult updateUser(UserAccount user)
     {
-        userRepository.save(user);
+        userAccountRepository.save(user);
 
         return Response.createOkResp("edit success");
     }
@@ -78,31 +76,10 @@ public class UserAccountController {
     public ResponseResult<UserAccount> deleteUserById(@PathVariable(name = "id") int id)
     {
 
-        userRepository.deleteById(id);
+        userAccountRepository.deleteById(id);
         return Response.createOkResp("delete success");
 
     }
 
-//    //校验密码
-//    @PostMapping("/login")
-//    public ResponseResult loginUser(UserAccount user)
-//    {
-//        String name = user.getUname();
-//        String pwd = user.getUpw();
-//        System.out.println("=--------");
-//        System.out.println(name);
-//        System.out.println("----------");
-//        List<UserAccount> users = userRepository.findByUname(name);
-//        for(UserAccount us:users){
-//            System.out.println(us.getUname());
-//        }
-//        if(users.isEmpty()) return Response.createFailResp("no such user");
-//        if(users.get(0).getUpw().equals(pwd)){
-//            return Response.createOkResp("login success");
-//        }
-//        else{
-//            return Response.createFailResp("wrong password");
-//        }
-//
-//    }
+
 }

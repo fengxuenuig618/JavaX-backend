@@ -1,10 +1,7 @@
 package com.fengxue.javax_backend.controller;
 
-import com.fengxue.javax_backend.dao.ChapterTutorialRepository;
-import com.fengxue.javax_backend.dao.CourseMcqRepository;
-import com.fengxue.javax_backend.dao.UserQuizRepository;
-import com.fengxue.javax_backend.entity.ChapterTutorial;
-import com.fengxue.javax_backend.entity.CourseMcq;
+import com.fengxue.javax_backend.dao.*;
+import com.fengxue.javax_backend.entity.*;
 import com.fengxue.javax_backend.util.DataProcess;
 import com.fengxue.javax_backend.util.McqStateMachine;
 import com.fengxue.javax_backend.util.MyAnnotation.UserLoginToken;
@@ -32,15 +29,28 @@ public class MyCoursesController {
     @Autowired
     private UserQuizRepository userQuizRepository;
 
+    @Autowired
+    private UserProfileSettingRepository userProfileSettingRepository;
+
+    @Autowired
+    private CourseChapterRepository courseChapterRepository;
+
+    @Autowired
+    private UserSkipRepository userSkipRepository;
+
 
     @GetMapping("/getMyModulesPreQuiz/{uid}:{chapterId}:{level}")
     public ResponseResult<List<CourseMcq>> selectPreQuiz(@PathVariable(name = "chapterId") String chapterId,
                                                              @PathVariable(name = "level") int level,
                                                              @PathVariable(name = "uid") int uid)
     {
+        //所有满足等级要求的该章节题目
         List<CourseMcq> baseQuiz = courseMcqRepository.findAllByChapterBelongAndGlobalLevelLessThanEqual(chapterId,level);
+
+        //Map<章节id,该章节题目组>
         Map<String,List<CourseMcq>> mcqMap = new HashMap<>();
         for(CourseMcq quiz : baseQuiz){
+            //填充选项
             for(String option:DataProcess.getDelimitArray(quiz.getStrOptions(),";")){
                 quiz.getOptions().add(option);
             }
@@ -50,6 +60,8 @@ public class MyCoursesController {
             }
             mcqMap.get(curTutorial).add(quiz);
         }
+
+        //返回题目组
         List<CourseMcq> retQuiz = new ArrayList<>();
         for(String key:mcqMap.keySet()){
             List<CourseMcq> curParagraph = mcqMap.get(key);
@@ -76,15 +88,59 @@ public class MyCoursesController {
 
 
     @UserLoginToken
-    @GetMapping("/getMyModulesTutorial/{chapterId}:{level}")
+    @GetMapping("/getMyModulesTutorial/{uid}:{chapterId}:{level}")
     public ResponseResult<List<ChapterTutorial>> selectChapterTutorial(@PathVariable(name = "level") int level,
-                                                                       @PathVariable(name = "chapterId") String chapterId)
+                                                                       @PathVariable(name = "chapterId") String chapterId,
+                                                                       @PathVariable(name = "uid") int uid)
     {
         List<ChapterTutorial> baseTutorials =
                 chapterTutorialRepository.findAllByChapterBelongAndGlobalLevelLessThanEqual(chapterId,level);
+        Set<String> skipSet = DataProcess.getDelimitSet(userSkipRepository.findByUid(uid).getSkipTutorial(),";") ;
+        baseTutorials.removeIf(chapterTutorial -> skipSet.contains(chapterTutorial.getTutorialId()));
 
         return Response.createOkResp(baseTutorials);
     }
+
+    @GetMapping("/saveTutorial/{uid}:{chapterId}:{skips}")
+    public ResponseResult<String> saveTutorial(@PathVariable(name = "chapterId") String chapterId,
+                                                             @PathVariable(name = "skips") String skips,
+                                                             @PathVariable(name = "uid") int uid)
+    {
+        System.out.println("str*************  "+skips);
+        List<ChapterTutorial> tutorials = chapterTutorialRepository.findAllByChapterBelong(chapterId);
+        Set<String> skipSet = DataProcess.getDelimitSet(skips,"-");
+        Set<String> userSkip = new HashSet<>();
+        Set<String> userNotSkip = new HashSet<>();
+        String userSkipStr = "";
+        for(ChapterTutorial chapterTutorial:tutorials){
+            if(skipSet.contains(chapterTutorial.getTutorialTitle())){
+                userSkip.add(chapterTutorial.getTutorialId());
+                userSkipStr += chapterTutorial.getTutorialId();
+                userSkipStr += ";";
+            }
+            else{
+                userNotSkip.add(chapterTutorial.getTutorialId());
+            }
+        }
+        System.out.println("not skip -- "+userNotSkip.toString());
+        System.out.println("skip -- "+userSkip.toString());
+        UserSkip userData = userSkipRepository.findByUid(uid);
+        if(userData == null){
+            userData = new UserSkip();
+            userData.setUid(uid);
+            userData.setSkipTutorial(userSkipStr);
+            userSkipRepository.save(userData);
+        }
+        else{
+            Set<String> dataSet = DataProcess.getDelimitSet(userData.getSkipTutorial(),";");
+            dataSet.addAll(userSkip);
+            dataSet.removeAll(userNotSkip);
+            userData.setSkipTutorial(DataProcess.set2String(dataSet,";"));
+            userSkipRepository.save(userData);
+        }
+        return Response.createOkResp();
+    }
+
 
     @GetMapping("/getMyModulesQuiz/{uid}:{chapterId}:{level}")
     public ResponseResult<List<CourseMcq>> selectChapterQuiz(@PathVariable(name = "chapterId") String chapterId,
@@ -124,6 +180,36 @@ public class MyCoursesController {
 
         if(retMcq.size()>0) return Response.createOkResp(retMcq);
         else return Response.createFailResp("no quiz");
+    }
+
+    @GetMapping("/checkModuleQuiz/{uid}:{moduleId}")
+    public ResponseResult<List<CourseMcq>> checkModuleQuiz(@PathVariable(name = "uid") int uid,
+                                                        @PathVariable(name = "moduleId") String moduleId) {
+        UserProfileSetting userProfileSetting = userProfileSettingRepository.findByUid(uid);
+        int level = userProfileSetting.getGlobalLevel();
+        List<CourseChapter> chapters =  courseChapterRepository.findAllByModuleBelong(moduleId);
+        List<String> chapterIds = new ArrayList<>();
+        for(CourseChapter courseChapter:chapters){
+            if(courseChapter.getGlobalLevel() <= level)  chapterIds.add(courseChapter.getChapterId());
+        }
+        Set<String> doneChapters = DataProcess.getDelimitSet(userQuizRepository.getById(uid).getDoneQuiz(),";");
+        for(String curChapter:chapterIds){
+            if(!doneChapters.contains(curChapter))  return Response.createFailResp("no");
+        }
+        return Response.createOkResp("yes");
+
+
+    }
+
+    @GetMapping("/checkFinalQuiz/{uid}")
+    public ResponseResult<List<CourseMcq>> checkFinalQuiz(@PathVariable(name = "uid") int uid) {
+        UserProfileSetting userProfileSetting = userProfileSettingRepository.findByUid(uid);
+        String[] modules = DataProcess.getDelimitArray(userProfileSetting.getSelectModules(),",");
+        Set<String> doneModules = DataProcess.getDelimitSet(userQuizRepository.getById(uid).getDoneModule(),";");
+        for(String curModule:modules){
+            if(!doneModules.contains(curModule))  return Response.createFailResp("no");
+        }
+        return Response.createOkResp("yes");
     }
 
     @GetMapping("/getFinalQuiz/{uid}")

@@ -5,8 +5,10 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.fengxue.javax_backend.dao.UserLoginRepository;
-import com.fengxue.javax_backend.entity.UserLogin;
+import com.fengxue.javax_backend.dao.UserAccountRepository;
+
+import com.fengxue.javax_backend.entity.UserAccount;
+import com.fengxue.javax_backend.entity.UserLoginTransfer;
 import com.fengxue.javax_backend.util.MyAnnotation.PassToken;
 import com.fengxue.javax_backend.util.MyAnnotation.UserLoginToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +19,10 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import java.util.List;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
     @Autowired
-    UserLoginRepository userService;
+    UserAccountRepository userService;
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object object) throws Exception {
@@ -54,7 +55,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 } catch (JWTDecodeException j) {
                     throw new RuntimeException("401");
                 }
-                UserLogin user = userService.findByUname(userId);
+                UserAccount user = userService.findByUname(userId);
                 if (user == null) {
                     throw new RuntimeException("用户不存在，请重新登录");
                 }

@@ -7,15 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MenuCourseChapter {
+public class ResetPasswordTransfer {
+    private String email;
 
-    private String chapterId;
-
-    private String chapterTitle;
-
-    private boolean preDone;
-
-    private boolean chapterDone;
-
+    private String password;
 
 }

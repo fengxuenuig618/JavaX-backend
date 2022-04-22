@@ -4,18 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MenuCourseChapter {
 
-    private String chapterId;
+public class UserLoginTransfer {
 
-    private String chapterTitle;
+    private int uid;
 
-    private boolean preDone;
+    private String uname;
 
-    private boolean chapterDone;
-
-
+    private String upw;
 }

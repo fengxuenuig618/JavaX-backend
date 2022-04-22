@@ -17,6 +17,8 @@ public class MenuCourseModule {
 
     private String moduleTitle;
 
+    private boolean moduleDone;
+
     private List<MenuCourseChapter> chapters;
 
 }

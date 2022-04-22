@@ -30,4 +30,14 @@ public class DataProcess {
         }
         return retMap;
     }
+
+    public static String set2String(Set<String> set,String delimiter){
+        if(set == null) return "";
+        StringBuilder ret = new StringBuilder();
+        for(String str:set){
+            ret.append(str);
+            ret.append(delimiter);
+        }
+        return ret.toString();
+    }
 }

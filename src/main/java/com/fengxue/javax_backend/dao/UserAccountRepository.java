@@ -7,4 +7,8 @@ import java.util.*;
 
 public interface UserAccountRepository extends JpaRepository<UserAccount,Integer> {
     UserAccount findByUname(String userName);
+
+    UserAccount findByUid(int id);
+
+    UserAccount findByUemail(String email);
 }
