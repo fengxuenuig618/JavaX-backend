@@ -8,6 +8,7 @@ import com.fengxue.javax_backend.entity.*;
 import com.fengxue.javax_backend.service.TokenService;
 import com.fengxue.javax_backend.util.DataProcess;
 import com.fengxue.javax_backend.util.McqStateMachine;
+import com.fengxue.javax_backend.util.MyAnnotation.UserLoginToken;
 import com.fengxue.javax_backend.util.Response.Response;
 import com.fengxue.javax_backend.util.Response.ResponseResult;
 import org.apache.catalina.User;
@@ -32,12 +33,13 @@ public class UserProfileController {
     @Autowired
     private CourseModuleRepository courseModuleRepository;
 
+    @UserLoginToken
     @GetMapping("/getUserProfile/{id}")
     public ResponseResult getProfile(@PathVariable(name = "id") int id){
 
         UserProfileSetting baseSetting = userProfileSettingRepository.findByUid(id);
         if(baseSetting==null || baseSetting.getHasSet()!=1){
-            return Response.createFailResp("no set");
+            return Response.createOkResp("no set");
         }
 
         String[] userSelectedModule = DataProcess.getDelimitArray(baseSetting.getSelectModules(),",");

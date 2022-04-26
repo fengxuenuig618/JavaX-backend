@@ -4,6 +4,7 @@ import com.fengxue.javax_backend.dao.UserAccountRepository;
 import com.fengxue.javax_backend.dao.UserDateRepository;
 import com.fengxue.javax_backend.entity.*;
 import com.fengxue.javax_backend.util.DataProcess;
+import com.fengxue.javax_backend.util.MyAnnotation.UserLoginToken;
 import com.fengxue.javax_backend.util.Response.Response;
 import com.fengxue.javax_backend.util.Response.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ public class UserDateController {
     @Autowired
     private UserDateRepository userDateRepository;
 
+    @UserLoginToken
     @GetMapping("/getUserDate/{id}")
     public ResponseResult getUserDate(@PathVariable(name = "id") int id){
         UserDate baseDate = userDateRepository.findByUid(id);
@@ -31,6 +33,7 @@ public class UserDateController {
         return Response.createOkResp(retDate);
     }
 
+    @UserLoginToken
     @PostMapping("/postUserNewDate/{id}")
     public ResponseResult postUserDate(@PathVariable(name = "id") int id,UserDateTransfer user){
         System.out.println("====================");

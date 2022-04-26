@@ -5,6 +5,7 @@ import com.fengxue.javax_backend.entity.UserQuiz;
 import com.fengxue.javax_backend.entity.UserQuizTransfer;
 import com.fengxue.javax_backend.util.DataProcess;
 import com.fengxue.javax_backend.util.McqStateMachine;
+import com.fengxue.javax_backend.util.MyAnnotation.UserLoginToken;
 import com.fengxue.javax_backend.util.Response.Response;
 import com.fengxue.javax_backend.util.Response.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ public class McqSaveController {
     @Autowired
     private UserQuizRepository userQuizRepository;
 
+    @UserLoginToken
     @PostMapping("/savePreQuiz/{id}:{chapter}")
     public ResponseResult savePreQuiz(@PathVariable(name = "id") int userId,
                                       @PathVariable(name = "chapter") String chapter,
@@ -103,6 +105,7 @@ public class McqSaveController {
 
     }
 
+    @UserLoginToken
     @PostMapping("/saveAfterQuiz/{id}:{chapter}")
     public ResponseResult saveAfterQuiz(@PathVariable(name = "id") int userId,
                                       @PathVariable(name = "chapter") String chapter,
@@ -156,7 +159,7 @@ public class McqSaveController {
         return Response.createOkResp();
     }
 
-
+    @UserLoginToken
     @PostMapping("/saveModuleQuiz/{id}:{module}")
     public ResponseResult saveModuleQuiz(@PathVariable(name = "id") int userId,
                                         @PathVariable(name = "module") String module,
@@ -211,7 +214,7 @@ public class McqSaveController {
     }
 
 
-
+    @UserLoginToken
     @PostMapping("/saveWrongQuiz/{id}")
     public ResponseResult saveWrongQuiz(@PathVariable(name = "id") int userId,
                                    UserQuizTransfer userQuiz)

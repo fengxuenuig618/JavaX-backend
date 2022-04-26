@@ -11,15 +11,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 测试用
+ * */
 @RestController
 public class UserAccountController {
     @Autowired
     private UserAccountRepository userAccountRepository;
-
-
-
-
-
 
 
 

@@ -46,7 +46,7 @@ public class SideMenuController {
     }
 
     //查询用户定制module菜单
-    //@UserLoginToken
+    @UserLoginToken
     @GetMapping("/menuMyModules/{id}")
     public ResponseResult<List<MenuCourseModule>> selectMyModules(@PathVariable(name = "id") int id)
     {

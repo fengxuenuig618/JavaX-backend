@@ -34,7 +34,7 @@ public class UserAccountManage<Static> {
     private UserVerificationRepository userVerificationRepository;
 
 
-    @UserLoginToken
+    @PassToken
     @GetMapping("/getUserAccount/{name}")
     public ResponseResult getAccount(@PathVariable(name = "name") String name){
 

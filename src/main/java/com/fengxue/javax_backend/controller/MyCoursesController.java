@@ -39,6 +39,7 @@ public class MyCoursesController {
     private UserSkipRepository userSkipRepository;
 
 
+    @UserLoginToken
     @GetMapping("/getMyModulesPreQuiz/{uid}:{chapterId}:{level}")
     public ResponseResult<List<CourseMcq>> selectPreQuiz(@PathVariable(name = "chapterId") String chapterId,
                                                              @PathVariable(name = "level") int level,
@@ -101,6 +102,7 @@ public class MyCoursesController {
         return Response.createOkResp(baseTutorials);
     }
 
+    @UserLoginToken
     @GetMapping("/saveTutorial/{uid}:{chapterId}:{skips}")
     public ResponseResult<String> saveTutorial(@PathVariable(name = "chapterId") String chapterId,
                                                              @PathVariable(name = "skips") String skips,
@@ -142,6 +144,7 @@ public class MyCoursesController {
     }
 
 
+    @UserLoginToken
     @GetMapping("/getMyModulesQuiz/{uid}:{chapterId}:{level}")
     public ResponseResult<List<CourseMcq>> selectChapterQuiz(@PathVariable(name = "chapterId") String chapterId,
                                                              @PathVariable(name = "level") int level,
@@ -157,6 +160,7 @@ public class MyCoursesController {
 
     }
 
+    @UserLoginToken
     @GetMapping("/getModuleQuiz/{uid}:{moduleId}")
     public ResponseResult<List<CourseMcq>> getModuleQuiz(@PathVariable(name = "moduleId") String moduleId,
                                                              @PathVariable(name = "uid") int uid)
@@ -182,6 +186,7 @@ public class MyCoursesController {
         else return Response.createFailResp("no quiz");
     }
 
+    @UserLoginToken
     @GetMapping("/checkModuleQuiz/{uid}:{moduleId}")
     public ResponseResult<List<CourseMcq>> checkModuleQuiz(@PathVariable(name = "uid") int uid,
                                                         @PathVariable(name = "moduleId") String moduleId) {
@@ -201,6 +206,7 @@ public class MyCoursesController {
 
     }
 
+    @UserLoginToken
     @GetMapping("/checkFinalQuiz/{uid}")
     public ResponseResult<List<CourseMcq>> checkFinalQuiz(@PathVariable(name = "uid") int uid) {
         UserProfileSetting userProfileSetting = userProfileSettingRepository.findByUid(uid);
@@ -212,6 +218,7 @@ public class MyCoursesController {
         return Response.createOkResp("yes");
     }
 
+    @UserLoginToken
     @GetMapping("/getFinalQuiz/{uid}")
     public ResponseResult<List<CourseMcq>> getFinalQuiz(@PathVariable(name = "uid") int uid)
     {

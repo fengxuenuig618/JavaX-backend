@@ -38,6 +38,7 @@ public class ALLCoursesController {
         return Response.createOkResp(baseTutorials);
     }
 
+    @UserLoginToken
     @GetMapping("/getAllModulesQuiz/{id}")
     public ResponseResult<List<CourseMcq>> selectChapterQuiz(@PathVariable(name = "id") String chapterId)
     {

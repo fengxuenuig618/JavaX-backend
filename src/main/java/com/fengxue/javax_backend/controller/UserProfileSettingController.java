@@ -28,7 +28,7 @@ public class UserProfileSettingController {
     private CourseModuleRepository courseModuleRepository;
 
 
-    //@UserLoginToken
+    @UserLoginToken
     @GetMapping("/getUserProfileSetting/{id}")
     public ResponseResult getAccount(@PathVariable(name = "id") int id){
 
@@ -62,5 +62,12 @@ public class UserProfileSettingController {
         userProfileSetting.save(user);
         return Response.createOkResp(user);
 
+    }
+
+    @UserLoginToken
+    @GetMapping("/getModuleInfo")
+    public ResponseResult getModuleInfo(){
+        List<CourseModule> baseModules = courseModuleRepository.findAll();
+        return Response.createOkResp(baseModules);
     }
 }

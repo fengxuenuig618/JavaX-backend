@@ -4,8 +4,10 @@ import com.fengxue.javax_backend.dao.CourseMcqRepository;
 import com.fengxue.javax_backend.dao.UserQuizRepository;
 import com.fengxue.javax_backend.entity.ChapterTutorial;
 import com.fengxue.javax_backend.entity.CourseMcq;
+import com.fengxue.javax_backend.entity.UserQuiz;
 import com.fengxue.javax_backend.util.DataProcess;
 import com.fengxue.javax_backend.util.McqStateMachine;
+import com.fengxue.javax_backend.util.MyAnnotation.UserLoginToken;
 import com.fengxue.javax_backend.util.Response.Response;
 import com.fengxue.javax_backend.util.Response.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +28,13 @@ public class WrongQuestionController {
     @Autowired
     private UserQuizRepository userQuizRepository;
 
+    @UserLoginToken
     @GetMapping("/getWrongQuiz/{id}")
     public ResponseResult<List<CourseMcq>> selectChapterTutorial(@PathVariable(name = "id") int id)
     {
 
+        UserQuiz userQuiz = userQuizRepository.findByUid(id);
+        if(userQuiz== null) return Response.createFailResp("no wrong");
         Map<String,String> userRecord = DataProcess.getBisectMap(userQuizRepository.getById(id).getQuizRecord(),";",":");
         List<CourseMcq> retMcq = new ArrayList<>();
         for(String qid:userRecord.keySet()){
