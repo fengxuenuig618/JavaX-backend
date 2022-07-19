@@ -201,6 +201,9 @@ public class MyCoursesController {
         for(String curChapter:chapterIds){
             if(!doneChapters.contains(curChapter))  return Response.createFailResp("no");
         }
+
+
+
         return Response.createOkResp("yes");
 
 
